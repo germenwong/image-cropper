@@ -257,6 +257,12 @@ const qualityDisabled = computed(() => props.config.format === "png");
   height: 100%;
   overflow-y: auto;
 }
+@media (max-width: 1180px) {
+  .panel {
+    height: auto;
+    overflow-y: visible;
+  }
+}
 .block {
   margin-bottom: 14px;
 }

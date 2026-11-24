@@ -150,6 +150,7 @@ defineExpose({ reset });
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   height: 100%;
 }
 .head {
@@ -180,6 +181,7 @@ defineExpose({ reset });
 .stage {
   position: relative;
   flex: 1;
+  min-height: 180px;
   overflow: hidden;
   display: flex;
   align-items: center;

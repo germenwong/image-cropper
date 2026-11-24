@@ -407,75 +407,78 @@ const ratioLabel = computed(() => {
       </div>
     </section>
 
-    <!-- 主体：参数 + 预览 -->
-    <section class="main">
-      <aside class="side">
-        <param-panel
-          :config="config"
-          :presets="presets"
-          :disabled="running"
-          @update:config="(v) => Object.assign(config, v)"
-          @save-presets="savePresets"
-          @apply="refreshPreview"
-        />
-      </aside>
+    <!-- 主体 + 底部一起滚动，窗口变小时可纵向滚动 -->
+    <div class="scroll-body scroll-y">
+      <!-- 主体：参数 + 预览 -->
+      <section class="main">
+        <aside class="side">
+          <param-panel
+            :config="config"
+            :presets="presets"
+            :disabled="running"
+            @update:config="(v) => Object.assign(config, v)"
+            @save-presets="savePresets"
+            @apply="refreshPreview"
+          />
+        </aside>
 
-      <div class="content">
-        <div class="content-head">
-          <div class="summary">
-            <n-tag :bordered="false" type="primary">居中裁切</n-tag>
-            <span class="dim">
-              {{ config.targetW || "-" }} × {{ config.targetH || "-" }} px
-              <template v-if="ratioLabel">（{{ ratioLabel }}）</template>
-            </span>
-            <span class="dim">· {{ fillLabel }}</span>
-            <n-tag size="small" :bordered="false">{{ config.format.toUpperCase() }}</n-tag>
-            <n-tag v-if="dirty && !autoPreview" size="small" type="warning" :bordered="false">
-              参数已修改，点击「应用并预览」
-            </n-tag>
+        <div class="content">
+          <div class="content-head">
+            <div class="summary">
+              <n-tag :bordered="false" type="primary">居中裁切</n-tag>
+              <span class="dim">
+                {{ config.targetW || "-" }} × {{ config.targetH || "-" }} px
+                <template v-if="ratioLabel">（{{ ratioLabel }}）</template>
+              </span>
+              <span class="dim">· {{ fillLabel }}</span>
+              <n-tag size="small" :bordered="false">{{ config.format.toUpperCase() }}</n-tag>
+              <n-tag v-if="dirty && !autoPreview" size="small" type="warning" :bordered="false">
+                参数已修改，点击「应用并预览」
+              </n-tag>
+            </div>
+            <div class="head-right">
+              <span class="dim">自动预览</span>
+              <n-switch v-model:value="autoPreview" size="small" />
+              <n-button
+                size="small"
+                secondary
+                :loading="previewing"
+                :disabled="!config.srcDir"
+                @click="loadSample('')"
+              >
+                换一张样本
+              </n-button>
+            </div>
           </div>
-          <div class="head-right">
-            <span class="dim">自动预览</span>
-            <n-switch v-model:value="autoPreview" size="small" />
-            <n-button
-              size="small"
-              secondary
-              :loading="previewing"
-              :disabled="!config.srcDir"
-              @click="loadSample('')"
-            >
-              换一张样本
-            </n-button>
+
+          <!-- 双栏预览：窄窗口时改为上下堆叠 -->
+          <div class="previews">
+            <div class="pane-wrap" data-drop-zone="preview">
+              <preview-pane
+                title="原图"
+                :src="originalPreview?.original"
+                :meta="previewMeta"
+                :crop-box="cropBox"
+                empty-text="选择素材目录后自动加载样例，或拖入单张图片测试"
+                @drop-file="loadSample"
+              />
+            </div>
+            <div class="divider" />
+            <div class="pane-wrap">
+              <preview-pane
+                title="裁切后"
+                :src="croppedPreview"
+                :meta="`${config.targetW || '-'} × ${config.targetH || '-'}`"
+                highlight
+                empty-text="点击「应用并预览」查看效果"
+              />
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="previews">
-          <div class="pane-wrap" data-drop-zone="preview">
-            <preview-pane
-              title="原图"
-              :src="originalPreview?.original"
-              :meta="previewMeta"
-              :crop-box="cropBox"
-              empty-text="选择素材目录后自动加载样例，或拖入单张图片测试"
-              @drop-file="loadSample"
-            />
-          </div>
-          <div class="divider" />
-          <div class="pane-wrap">
-            <preview-pane
-              title="裁切后"
-              :src="croppedPreview"
-              :meta="`${config.targetW || '-'} × ${config.targetH || '-'}`"
-              highlight
-              empty-text="点击「应用并预览」查看效果"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 底部：执行面板 -->
-    <section class="bottom">
+      <!-- 底部：执行面板 -->
+      <section class="bottom">
       <div class="actions">
         <n-button
           type="primary"
@@ -548,7 +551,8 @@ const ratioLabel = computed(() => {
           </div>
         </n-scrollbar>
       </div>
-    </section>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -557,12 +561,15 @@ const ratioLabel = computed(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
   background: #f6f7fb;
+  overflow: hidden;
 }
 .top {
   background: #fff;
   padding: 12px 16px 10px;
   border-bottom: 1px solid #eceef4;
+  flex: 0 0 auto;
 }
 .top-grid {
   display: grid;
@@ -574,10 +581,17 @@ const ratioLabel = computed(() => {
   font-size: 12px;
   color: #9aa0ae;
 }
-.main {
+.scroll-body {
   flex: 1;
-  display: flex;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.main {
+  flex: 0 0 auto;
+  display: flex;
+  min-height: 520px;
   padding: 12px;
   gap: 12px;
 }
@@ -638,6 +652,51 @@ const ratioLabel = computed(() => {
 .divider {
   width: 1px;
   background: #eceef4;
+  flex: 0 0 1px;
+}
+
+/* 窄窗口：参数区与预览改为上下堆叠，预览双栏改为上下两行 */
+@media (max-width: 1180px) {
+  .main {
+    flex-direction: column;
+    min-height: 0;
+  }
+  .side {
+    width: 100%;
+    flex: 0 0 auto;
+    max-height: none;
+  }
+  .content {
+    min-height: 480px;
+  }
+}
+@media (max-width: 860px) {
+  .top-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .previews {
+    flex-direction: column;
+  }
+  .previews .divider {
+    width: auto;
+    height: 1px;
+    flex: 0 0 1px;
+  }
+  .pane-wrap {
+    min-height: 260px;
+  }
+  .actions {
+    flex-wrap: wrap;
+  }
+  .progress-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .stats {
+    justify-content: space-between;
+  }
 }
 .bottom {
   background: #fff;
@@ -646,6 +705,7 @@ const ratioLabel = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 0 0 auto;
 }
 .actions {
   display: flex;
