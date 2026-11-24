@@ -46,7 +46,7 @@ pub fn origin_preview(abs_path: &str) -> Result<PreviewInfo, String> {
 /// 渲染裁切结果预览（限制输出尺寸，保持目标宽高比）
 pub fn render(abs_path: &str, cfg: &CropConfig) -> Result<String, String> {
     let img = image::open(abs_path).map_err(|e| format!("无法读取图片: {}", e))?;
-    let out = crop::crop_to(&img, cfg.target_w, cfg.target_h, &cfg.fill);
+    let out = crop::crop_to(&img, cfg);
     let scale = (PREVIEW_MAX as f64 / out.width().max(out.height()) as f64).min(1.0);
     let final_img = if scale < 1.0 {
         let nw = ((out.width() as f64 * scale).round() as u32).max(1);

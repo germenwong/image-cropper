@@ -1,5 +1,8 @@
 export type OutputFormat = "png" | "jpg" | "webp";
 
+/** spec = 规格输出（按比例取景后缩放到目标像素）；pixel = 像素裁切（1:1 截取不缩放） */
+export type CropMode = "spec" | "pixel";
+
 export type FillMode =
   | { kind: "transparent" }
   | { kind: "color"; hex: string }
@@ -10,6 +13,9 @@ export interface CropConfig {
   outDir: string;
   targetW: number;
   targetH: number;
+  mode: CropMode;
+  /** 规格输出模式下是否允许放大小图 */
+  allowUpscale: boolean;
   fill: FillMode;
   format: OutputFormat;
   quality: number;

@@ -18,6 +18,22 @@ impl Default for FillMode {
     }
 }
 
+/// 裁切模式
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum CropMode {
+    /// 规格输出：目标尺寸决定取景比例，再缩放为成品像素（主流做法）
+    Spec,
+    /// 像素裁切：按目标像素从原图 1:1 截取，不缩放
+    Pixel,
+}
+
+impl Default for CropMode {
+    fn default() -> Self {
+        CropMode::Spec
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum OutputFormat {
@@ -43,6 +59,12 @@ pub struct CropConfig {
     pub out_dir: String,
     pub target_w: u32,
     pub target_h: u32,
+    /// 裁切模式，缺省为规格输出（兼容旧配置）
+    #[serde(default)]
+    pub mode: CropMode,
+    /// 规格输出模式下是否允许放大小图（默认禁止，避免画质损失）
+    #[serde(default)]
+    pub allow_upscale: bool,
     pub fill: FillMode,
     pub format: OutputFormat,
     /// 0~100，仅 jpg / webp 生效

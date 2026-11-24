@@ -42,6 +42,8 @@ const config = reactive<CropConfig>({
   outDir: "",
   targetW: 512,
   targetH: 512,
+  mode: "spec",
+  allowUpscale: false,
   fill: { kind: "transparent" },
   format: "png",
   quality: 90,
@@ -272,7 +274,9 @@ async function updateCropBox() {
     info.width,
     info.height,
     config.targetW,
-    config.targetH
+    config.targetH,
+    config.mode,
+    config.allowUpscale
   );
   cropBox.value = {
     x: x / info.width,
@@ -283,7 +287,15 @@ async function updateCropBox() {
 }
 
 watch(
-  () => [config.targetW, config.targetH, JSON.stringify(config.fill), config.format, config.quality],
+  () => [
+    config.targetW,
+    config.targetH,
+    config.mode,
+    config.allowUpscale,
+    JSON.stringify(config.fill),
+    config.format,
+    config.quality,
+  ],
   () => {
     dirty.value = true;
     if (autoPreview.value) refreshPreview();
@@ -358,6 +370,14 @@ const previewMeta = computed(() => {
   const i = originalPreview.value;
   if (!i) return "";
   return `${i.width} × ${i.height} px`;
+});
+
+/** 裁切框保留的原图像素尺寸，帮助理解「框 = 保留范围」而非输出尺寸 */
+const cropLabel = computed(() => {
+  const b = cropBox.value;
+  const i = originalPreview.value;
+  if (!b || !i) return "";
+  return `保留 ${Math.round(b.w * i.width)} × ${Math.round(b.h * i.height)} px`;
 });
 
 const fillLabel = computed(() => {
@@ -459,6 +479,7 @@ const ratioLabel = computed(() => {
                 :src="originalPreview?.original"
                 :meta="previewMeta"
                 :crop-box="cropBox"
+                :crop-label="cropLabel"
                 empty-text="选择素材目录后自动加载样例，或拖入单张图片测试"
                 @drop-file="loadSample"
               />

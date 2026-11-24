@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import type {
   CropConfig,
+  CropMode,
   DonePayload,
   LogPayload,
   Preset,
@@ -23,8 +24,22 @@ export const api = {
   revealInDir: (path: string) => invoke<void>("reveal_in_dir", { path }),
   loadPresets: () => invoke<Preset[]>("load_presets"),
   savePresets: (presets: Preset[]) => invoke<void>("save_presets", { presets }),
-  cropRect: (ow: number, oh: number, tw: number, th: number) =>
-    invoke<[number, number, number, number]>("crop_rect", { ow, oh, tw, th }),
+  cropRect: (
+    ow: number,
+    oh: number,
+    tw: number,
+    th: number,
+    mode: CropMode,
+    allowUpscale: boolean
+  ) =>
+    invoke<[number, number, number, number]>("crop_rect", {
+      ow,
+      oh,
+      tw,
+      th,
+      mode,
+      allowUpscale,
+    }),
 };
 
 export const events = {

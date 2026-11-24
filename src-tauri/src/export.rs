@@ -21,9 +21,14 @@ pub fn unique_path(dir: &Path, stem: &str, ext: &str) -> PathBuf {
     p
 }
 
-pub fn process_one(entry: &FileEntry, cfg: &CropConfig) -> Result<PathBuf, String> {
+/// 处理单张图片，成功时返回输出路径与附加提示（如放大倍数）
+pub fn process_one(
+    entry: &FileEntry,
+    cfg: &CropConfig,
+) -> Result<(PathBuf, Option<String>), String> {
     let img = image::open(&entry.abs_path).map_err(|e| format!("无法读取图片: {}", e))?;
-    let out_img = crop::crop_to(&img, cfg.target_w, cfg.target_h, &cfg.fill);
+    let note = crop::upscale_note(img.width(), img.height(), cfg);
+    let out_img = crop::crop_to(&img, cfg);
     let bytes = crop::encode(&out_img, cfg).map_err(|e| format!("编码失败: {}", e))?;
 
     let rel = Path::new(&entry.rel_path);
@@ -41,7 +46,7 @@ pub fn process_one(entry: &FileEntry, cfg: &CropConfig) -> Result<PathBuf, Strin
         std::fs::write(&target, bytes).map_err(|e| format!("写入失败: {}", e))?;
         target
     };
-    Ok(target)
+    Ok((target, note))
 }
 
 /// 同一目录下并发写文件时，需要串行化重名探测 + 写入
@@ -88,14 +93,14 @@ pub fn run_export(
             }
             let result = process_one(entry, &cfg);
             match result {
-                Ok(_) => {
+                Ok((_, note)) => {
                     let _ = app.emit(
                         EV_LOG,
                         LogPayload {
                             task_id,
                             ok: true,
                             name: entry.rel_path.clone(),
-                            reason: None,
+                            reason: note,
                         },
                     );
                 }
@@ -178,6 +183,8 @@ mod tests {
             out_dir: out.to_string_lossy().to_string(),
             target_w: 256,
             target_h: 256,
+            mode: crate::model::CropMode::Spec,
+            allow_upscale: false,
             fill: FillMode::Color { hex: "#ffffff".into() },
             format: OutputFormat::Png,
             quality: 90,

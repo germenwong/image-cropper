@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { NButton, NIcon, NTag } from "naive-ui";
 import { AddOutline, RemoveOutline, ScanOutline } from "@vicons/ionicons5";
 
@@ -11,6 +11,8 @@ const props = defineProps<{
   emptyText?: string;
   /** 裁切框，单位为相对原图的比例 0~1：{x,y,w,h} */
   cropBox?: { x: number; y: number; w: number; h: number } | null;
+  /** 裁切框上的文字，默认「裁切区域」 */
+  cropLabel?: string;
 }>();
 const emit = defineEmits<{ (e: "drop-file", path: string): void }>();
 
@@ -25,12 +27,59 @@ let baseX = 0;
 let baseY = 0;
 
 const stage = ref<HTMLDivElement | null>(null);
+const imgEl = ref<HTMLImageElement | null>(null);
+const fitScale = ref(1);
+/** 用户是否手动缩放过；没动过时窗口尺寸变化会自动重新适应 */
+let userAdjusted = false;
+let observer: ResizeObserver | null = null;
+
+const MIN_SCALE = 0.05;
+const MAX_SCALE = 8;
+
+function computeFit(): number {
+  const el = stage.value;
+  const img = imgEl.value;
+  if (!el || !img) return 1;
+  const w = img.naturalWidth || img.width;
+  const h = img.naturalHeight || img.height;
+  if (!w || !h) return 1;
+  const pad = 24;
+  const s = Math.min((el.clientWidth - pad) / w, (el.clientHeight - pad) / h);
+  return Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
+}
+
+/** 按画布大小适应图片：大图缩小、小图放大 */
+function applyFit(resetPan = true) {
+  fitScale.value = computeFit();
+  scale.value = fitScale.value;
+  if (resetPan) {
+    tx.value = 0;
+    ty.value = 0;
+  }
+  userAdjusted = false;
+}
+
+/** 只在图片尺寸变化（换图/换目标尺寸）时重新适应，避免调参数时缩放位置被重置 */
+let lastFitSize = "";
+
+function onImgLoad() {
+  const img = imgEl.value;
+  if (!img) return;
+  const key = `${img.naturalWidth}x${img.naturalHeight}`;
+  if (key === lastFitSize) return;
+  lastFitSize = key;
+  applyFit(true);
+}
+
+function zoomBy(factor: number) {
+  userAdjusted = true;
+  scale.value = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale.value * factor));
+}
 
 function onWheel(e: WheelEvent) {
   if (!props.src) return;
   e.preventDefault();
-  const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
-  scale.value = Math.min(8, Math.max(0.1, scale.value * factor));
+  zoomBy(e.deltaY < 0 ? 1.12 : 1 / 1.12);
 }
 
 function onPointerDown(e: PointerEvent) {
@@ -54,10 +103,17 @@ function onPointerUp() {
 }
 
 function reset() {
-  scale.value = 1;
-  tx.value = 0;
-  ty.value = 0;
+  applyFit(true);
 }
+
+onMounted(() => {
+  observer = new ResizeObserver(() => {
+    if (!userAdjusted) scale.value = computeFit();
+  });
+  if (stage.value) observer.observe(stage.value);
+});
+
+onBeforeUnmount(() => observer?.disconnect());
 
 const transformStyle = computed(() => ({
   transform: `translate(${tx.value}px, ${ty.value}px) scale(${scale.value})`,
@@ -94,14 +150,14 @@ defineExpose({ reset });
       <span class="title">{{ title }}</span>
       <n-tag v-if="meta" size="small" :bordered="false">{{ meta }}</n-tag>
       <div class="tools">
-        <n-button size="tiny" quaternary circle title="缩小" @click="scale = Math.max(0.1, scale / 1.2)">
+        <n-button size="tiny" quaternary circle title="缩小" @click="zoomBy(1 / 1.2)">
           <template #icon><n-icon><remove-outline /></n-icon></template>
         </n-button>
         <span class="pct">{{ Math.round(scale * 100) }}%</span>
-        <n-button size="tiny" quaternary circle title="放大" @click="scale = Math.min(8, scale * 1.2)">
+        <n-button size="tiny" quaternary circle title="放大" @click="zoomBy(1.2)">
           <template #icon><n-icon><add-outline /></n-icon></template>
         </n-button>
-        <n-button size="tiny" quaternary circle title="复位（双击画布）" @click="reset">
+        <n-button size="tiny" quaternary circle title="适应窗口（双击画布）" @click="reset">
           <template #icon><n-icon><scan-outline /></n-icon></template>
         </n-button>
       </div>
@@ -122,7 +178,7 @@ defineExpose({ reset });
     >
       <div v-if="src" class="img-wrap" :style="transformStyle">
         <div class="img-inner">
-          <img :src="src" draggable="false" />
+          <img ref="imgEl" :src="src" draggable="false" @load="onImgLoad" />
           <div
             v-if="cropBox"
             class="crop-box"
@@ -133,7 +189,7 @@ defineExpose({ reset });
               height: cropBox.h * 100 + '%',
             }"
           >
-            <span class="tag">裁切区域</span>
+            <span class="tag">{{ cropLabel || "裁切区域" }}</span>
           </div>
         </div>
       </div>
@@ -224,8 +280,6 @@ defineExpose({ reset });
 }
 .stage :deep(img) {
   display: block;
-  max-width: 100%;
-  max-height: 100%;
   box-shadow: 0 2px 12px rgba(20, 30, 60, 0.12);
   background-color: #fff;
   background-image: linear-gradient(45deg, #e9ebf0 25%, transparent 25%),

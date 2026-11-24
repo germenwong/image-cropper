@@ -131,8 +131,15 @@ fn save_presets(app: AppHandle, presets: Vec<Preset>) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn crop_rect(ow: u32, oh: u32, tw: u32, th: u32) -> (f64, f64, f64, f64) {
-    crop::crop_rect(ow, oh, tw, th)
+fn crop_rect(
+    ow: u32,
+    oh: u32,
+    tw: u32,
+    th: u32,
+    mode: CropMode,
+    allow_upscale: bool,
+) -> (f64, f64, f64, f64) {
+    crop::crop_rect(ow, oh, tw, th, mode, allow_upscale)
 }
 
 /// 统计素材目录信息（供前端展示）

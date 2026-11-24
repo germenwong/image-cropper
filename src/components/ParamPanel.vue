@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import {
   NButton,
+  NCheckbox,
   NColorPicker,
   NDivider,
   NInputGroup,
@@ -18,7 +19,7 @@ import {
   useMessage,
 } from "naive-ui";
 import { AddOutline, CloseOutline, FlashOutline } from "@vicons/ionicons5";
-import type { CropConfig, FillMode, OutputFormat, Preset } from "../types";
+import type { CropConfig, CropMode, FillMode, OutputFormat, Preset } from "../types";
 
 const props = defineProps<{
   config: CropConfig;
@@ -100,6 +101,35 @@ const qualityDisabled = computed(() => props.config.format === "png");
 <template>
   <div class="panel">
     <div class="block">
+      <div class="block-title">
+        模式
+        <n-tooltip>
+          <template #trigger>
+            <span class="hint">?</span>
+          </template>
+          规格输出：目标尺寸决定取景比例，再缩放到该像素（主流做法）<br />
+          像素裁切：从原图按目标像素 1:1 截取，不缩放
+        </n-tooltip>
+      </div>
+      <n-radio-group
+        :value="cfg.mode"
+        size="small"
+        :disabled="disabled"
+        @update:value="(v: CropMode) => patch({ mode: v })"
+      >
+        <n-radio value="spec">规格输出</n-radio>
+        <n-radio value="pixel">像素裁切</n-radio>
+      </n-radio-group>
+      <div class="mode-hint">
+        {{
+          cfg.mode === "spec"
+            ? "按目标比例取景，再缩放到目标像素"
+            : `从原图中心截取 ${cfg.targetW || "-"} × ${cfg.targetH || "-"} px，不缩放`
+        }}
+      </div>
+    </div>
+
+    <div class="block">
       <div class="block-title">尺寸</div>
       <n-input-group>
         <n-input-number
@@ -142,7 +172,7 @@ const qualityDisabled = computed(() => props.config.format === "png");
           <template #trigger>
             <span class="hint">?</span>
           </template>
-          原图小于目标尺寸时不放大小图，居中放置并用下方背景填充空余区域
+          原图小于目标尺寸时默认不放大，居中放置并用下方方式填充空余区域；勾选「允许放大」后改为放大铺满（画质会下降）
         </n-tooltip>
       </div>
       <n-radio-group
@@ -174,6 +204,17 @@ const qualityDisabled = computed(() => props.config.format === "png");
       <div v-if="fillKind === 'stretch'" class="warn">
         拉伸会改变图片比例，仅在明确需要时开启
       </div>
+      <n-checkbox
+        v-if="cfg.mode === 'spec'"
+        :checked="cfg.allowUpscale"
+        :disabled="disabled || fillKind === 'stretch'"
+        size="small"
+        class="upscale"
+        @update:checked="(v: boolean) => patch({ allowUpscale: v })"
+      >
+        允许放大原图（画质会下降）
+      </n-checkbox>
+      <div v-else class="mode-hint">像素裁切不做放大，原图不足时按上方方式填充</div>
     </div>
 
     <div class="block">
@@ -320,6 +361,15 @@ const qualityDisabled = computed(() => props.config.format === "png");
   border-radius: 4px;
   border: 1px solid #dfe2e8;
   cursor: pointer;
+}
+.mode-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #8a90a0;
+  line-height: 1.5;
+}
+.upscale {
+  margin-top: 10px;
 }
 .warn {
   margin-top: 8px;
