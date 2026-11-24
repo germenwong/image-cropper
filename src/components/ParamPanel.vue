@@ -312,7 +312,7 @@ const qualityDisabled = computed(() => props.config.format === "png");
   align-items: center;
   gap: 6px;
   font-weight: 600;
-  color: #4a5160;
+  color: var(--text-2);
   font-size: 13px;
   margin-bottom: 8px;
 }
@@ -320,14 +320,14 @@ const qualityDisabled = computed(() => props.config.format === "png");
   padding: 0 8px;
   display: flex;
   align-items: center;
-  color: #8a90a0;
+  color: var(--text-3);
 }
 .hint {
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: #e4e7ee;
-  color: #7a8090;
+  background: var(--chip-bg);
+  color: var(--text-3);
   font-size: 10px;
   display: inline-flex;
   align-items: center;
@@ -348,7 +348,7 @@ const qualityDisabled = computed(() => props.config.format === "png");
 .hex {
   font-family: ui-monospace, monospace;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-3);
 }
 .quick {
   margin-left: auto;
@@ -359,13 +359,13 @@ const qualityDisabled = computed(() => props.config.format === "png");
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  border: 1px solid #dfe2e8;
+  border: 1px solid var(--border);
   cursor: pointer;
 }
 .mode-hint {
   margin-top: 6px;
   font-size: 12px;
-  color: #8a90a0;
+  color: var(--text-3);
   line-height: 1.5;
 }
 .upscale {
@@ -374,8 +374,8 @@ const qualityDisabled = computed(() => props.config.format === "png");
 .warn {
   margin-top: 8px;
   font-size: 12px;
-  color: #d9822b;
-  background: #fff8ec;
+  color: var(--warn-text);
+  background: var(--warn-bg);
   border-radius: 4px;
   padding: 4px 8px;
 }
@@ -392,14 +392,14 @@ const qualityDisabled = computed(() => props.config.format === "png");
 .preset {
   display: flex;
   align-items: center;
-  border: 1px solid #eaecf2;
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 4px 4px 4px 8px;
-  background: #fbfcfe;
+  background: var(--surface-2);
 }
 .preset:hover {
-  border-color: #c7d2fe;
-  background: #f5f7ff;
+  border-color: var(--accent-soft);
+  background: var(--hover);
 }
 .preset-main {
   display: flex;
@@ -421,12 +421,12 @@ const qualityDisabled = computed(() => props.config.format === "png");
 .psize {
   margin-left: auto;
   font-size: 12px;
-  color: #8a90a0;
+  color: var(--text-3);
   font-family: ui-monospace, monospace;
 }
 .empty {
   font-size: 12px;
-  color: #a0a5b3;
+  color: var(--text-4);
   text-align: center;
   padding: 8px 0;
 }

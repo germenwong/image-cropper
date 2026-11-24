@@ -25,6 +25,7 @@ import DirPicker from "../components/DirPicker.vue";
 import ParamPanel from "../components/ParamPanel.vue";
 import PreviewPane from "../components/PreviewPane.vue";
 import { api, events } from "../api";
+import { isDark } from "../theme";
 import type {
   CropConfig,
   DonePayload,
@@ -422,8 +423,14 @@ const ratioLabel = computed(() => {
           />
         </div>
       </div>
-      <div class="tips">
-        支持 png / jpg / jpeg / webp，自动递归子目录 · 纯本地处理，不上传任何图片
+      <div class="tips-row">
+        <div class="tips">
+          支持 png / jpg / jpeg / webp，自动递归子目录 · 纯本地处理，不上传任何图片
+        </div>
+        <div class="theme-toggle">
+          <span class="dim">深色模式</span>
+          <n-switch v-model:value="isDark" size="small" />
+        </div>
       </div>
     </section>
 
@@ -583,13 +590,13 @@ const ratioLabel = computed(() => {
   flex-direction: column;
   height: 100%;
   min-width: 0;
-  background: #f6f7fb;
+  background: var(--bg);
   overflow: hidden;
 }
 .top {
-  background: #fff;
+  background: var(--surface);
   padding: 12px 16px 10px;
-  border-bottom: 1px solid #eceef4;
+  border-bottom: 1px solid var(--border);
   flex: 0 0 auto;
 }
 .top-grid {
@@ -597,10 +604,22 @@ const ratioLabel = computed(() => {
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
-.tips {
+.tips-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 8px;
+}
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.tips {
+  flex: 1;
   font-size: 12px;
-  color: #9aa0ae;
+  color: var(--text-4);
 }
 .scroll-body {
   flex: 1;
@@ -619,9 +638,9 @@ const ratioLabel = computed(() => {
 .side {
   width: 300px;
   flex: 0 0 300px;
-  background: #fff;
+  background: var(--surface);
   border-radius: 10px;
-  border: 1px solid #eceef4;
+  border: 1px solid var(--border);
   min-height: 0;
 }
 .content {
@@ -629,9 +648,9 @@ const ratioLabel = computed(() => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--surface);
   border-radius: 10px;
-  border: 1px solid #eceef4;
+  border: 1px solid var(--border);
   min-height: 0;
   overflow: hidden;
 }
@@ -639,7 +658,7 @@ const ratioLabel = computed(() => {
   display: flex;
   align-items: center;
   padding: 8px 12px;
-  border-bottom: 1px solid #eceef4;
+  border-bottom: 1px solid var(--border);
   gap: 12px;
 }
 .summary {
@@ -650,7 +669,7 @@ const ratioLabel = computed(() => {
   flex-wrap: wrap;
 }
 .dim {
-  color: #7a8090;
+  color: var(--text-3);
   font-size: 12px;
 }
 .head-right {
@@ -672,7 +691,7 @@ const ratioLabel = computed(() => {
 }
 .divider {
   width: 1px;
-  background: #eceef4;
+  background: var(--border);
   flex: 0 0 1px;
 }
 
@@ -720,8 +739,8 @@ const ratioLabel = computed(() => {
   }
 }
 .bottom {
-  background: #fff;
-  border-top: 1px solid #eceef4;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
@@ -741,11 +760,11 @@ const ratioLabel = computed(() => {
   display: flex;
   gap: 14px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-3);
   white-space: nowrap;
 }
 .stats b {
-  color: #1f2430;
+  color: var(--text);
   font-weight: 600;
 }
 .stats .danger b {
@@ -757,7 +776,7 @@ const ratioLabel = computed(() => {
   font-weight: 600;
 }
 .logs {
-  border: 1px solid #eceef4;
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -766,8 +785,8 @@ const ratioLabel = computed(() => {
   align-items: center;
   gap: 10px;
   padding: 6px 10px;
-  background: #fafbfd;
-  border-bottom: 1px solid #f0f2f7;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border-2);
 }
 .logs-title {
   font-weight: 600;
@@ -776,7 +795,7 @@ const ratioLabel = computed(() => {
 .logs-hint {
   margin-left: auto;
   font-size: 11px;
-  color: #a0a5b3;
+  color: var(--text-4);
 }
 .log-scroll {
   height: 132px;
@@ -784,7 +803,7 @@ const ratioLabel = computed(() => {
 .log-empty {
   padding: 16px;
   text-align: center;
-  color: #a0a5b3;
+  color: var(--text-4);
   font-size: 12px;
 }
 .log-item {
@@ -796,7 +815,7 @@ const ratioLabel = computed(() => {
   font-family: ui-monospace, SFMono-Regular, monospace;
 }
 .log-item:hover {
-  background: #f7f9fc;
+  background: var(--hover);
 }
 .li-icon {
   color: #18a058;
@@ -805,7 +824,7 @@ const ratioLabel = computed(() => {
   color: #e5484d;
 }
 .li-name {
-  color: #4a5160;
+  color: var(--text-2);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

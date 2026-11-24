@@ -4,10 +4,12 @@ import {
   NDialogProvider,
   NMessageProvider,
   NNotificationProvider,
+  darkTheme,
   zhCN,
   dateZhCN,
 } from "naive-ui";
 import MainView from "./views/MainView.vue";
+import { isDark } from "./theme";
 
 const themeOverrides = {
   common: {
@@ -24,6 +26,7 @@ const themeOverrides = {
     class="root-provider"
     :locale="zhCN"
     :date-locale="dateZhCN"
+    :theme="isDark ? darkTheme : null"
     :theme-overrides="themeOverrides"
   >
     <n-message-provider>

@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>一键批量裁切</title>
+    <script>
+      // 在样式加载前应用主题，避免深色模式启动白屏闪烁
+      try {
+        if (localStorage.getItem("ui-theme") === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="app"></div>

@@ -88,14 +88,14 @@ function commit(v: string) {
 }
 .picker.dragging {
   border-color: #4c6ef5;
-  background: #eef1ff;
+  background: var(--drop-bg);
 }
 .label {
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: #4a5160;
+  color: var(--text-2);
   margin-bottom: 6px;
 }
 .row {

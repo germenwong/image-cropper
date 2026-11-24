@@ -214,12 +214,12 @@ defineExpose({ reset });
   align-items: center;
   gap: 8px;
   padding: 6px 10px;
-  border-bottom: 1px solid #eceef4;
+  border-bottom: 1px solid var(--border);
 }
 .title {
   font-weight: 600;
   font-size: 13px;
-  color: #4a5160;
+  color: var(--text-2);
 }
 .tools {
   margin-left: auto;
@@ -229,7 +229,7 @@ defineExpose({ reset });
 }
 .pct {
   font-size: 11px;
-  color: #8a90a0;
+  color: var(--text-3);
   width: 40px;
   text-align: center;
   font-family: ui-monospace, monospace;
@@ -242,16 +242,16 @@ defineExpose({ reset });
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f7f8fa;
+  background: var(--stage);
   border: 1px solid transparent;
   touch-action: none;
 }
 .stage.hl {
-  background: #fbfbff;
+  background: var(--stage-hl);
 }
 .stage.drag-over {
   border-color: #4c6ef5;
-  background: #eef1ff;
+  background: var(--drop-bg);
 }
 .img-wrap {
   will-change: transform;
@@ -264,7 +264,7 @@ defineExpose({ reset });
 .crop-box {
   position: absolute;
   border: 2px solid #4c6ef5;
-  box-shadow: 0 0 0 9999px rgba(15, 22, 45, 0.42);
+  box-shadow: 0 0 0 9999px var(--mask);
   pointer-events: none;
 }
 .crop-box .tag {
@@ -280,17 +280,17 @@ defineExpose({ reset });
 }
 .stage :deep(img) {
   display: block;
-  box-shadow: 0 2px 12px rgba(20, 30, 60, 0.12);
-  background-color: #fff;
-  background-image: linear-gradient(45deg, #e9ebf0 25%, transparent 25%),
-    linear-gradient(-45deg, #e9ebf0 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #e9ebf0 75%),
-    linear-gradient(-45deg, transparent 75%, #e9ebf0 75%);
+  box-shadow: 0 2px 12px var(--shadow);
+  background-color: var(--checker-bg);
+  background-image: linear-gradient(45deg, var(--checker) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker) 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
 }
 .empty {
-  color: #a0a5b3;
+  color: var(--text-4);
   font-size: 13px;
 }
 .drop-hint {
@@ -298,7 +298,7 @@ defineExpose({ reset });
   bottom: 14px;
   font-size: 12px;
   color: #4c6ef5;
-  background: #fff;
+  background: var(--surface);
   padding: 4px 10px;
   border-radius: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

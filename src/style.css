@@ -1,8 +1,61 @@
 :root {
   font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   font-size: 14px;
-  color: #1f2430;
-  background: #f6f7fb;
+
+  /* 浅色主题 */
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --surface-2: #fafbfd;
+  --border: #eceef4;
+  --border-2: #f0f2f7;
+  --text: #1f2430;
+  --text-2: #4a5160;
+  --text-3: #7a8090;
+  --text-4: #9aa0ae;
+  --hover: #f7f9fc;
+  --stage: #f7f8fa;
+  --stage-hl: #fbfbff;
+  --checker: #e9ebf0;
+  --checker-bg: #ffffff;
+  --chip-bg: #e4e7ee;
+  --shadow: rgba(20, 30, 60, 0.12);
+  --mask: rgba(15, 22, 45, 0.42);
+  --warn-bg: #fff8ec;
+  --warn-text: #d9822b;
+  --drop-bg: #eef1ff;
+  --accent-soft: #c7d2fe;
+  --scrollbar: #c9ccd4;
+
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #14161c;
+  --surface: #1b1e26;
+  --surface-2: #22262f;
+  --border: #2b303b;
+  --border-2: #262b35;
+  --text: #e6e9f0;
+  --text-2: #c3c9d6;
+  --text-3: #9aa2b1;
+  --text-4: #7d8494;
+  --hover: #242832;
+  --stage: #171a21;
+  --stage-hl: #1b1f28;
+  --checker: #2a2f3a;
+  --checker-bg: #1b1e26;
+  --chip-bg: #2b303b;
+  --shadow: rgba(0, 0, 0, 0.5);
+  --mask: rgba(0, 0, 0, 0.6);
+  --warn-bg: #3a2f1c;
+  --warn-text: #e2b072;
+  --drop-bg: #1e2436;
+  --accent-soft: #3b4a80;
+  --scrollbar: #3a4150;
+
+  color-scheme: dark;
 }
 
 * {
@@ -27,17 +80,19 @@ body,
 
 body {
   user-select: none;
+  background: var(--bg);
+  color: var(--text);
 }
 
 /* 棋盘格：用于查看透明区域 */
 .checker {
-  background-image: linear-gradient(45deg, #e3e5ea 25%, transparent 25%),
-    linear-gradient(-45deg, #e3e5ea 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #e3e5ea 75%),
-    linear-gradient(-45deg, transparent 75%, #e3e5ea 75%);
+  background-image: linear-gradient(45deg, var(--checker) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker) 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
-  background-color: #f7f8fa;
+  background-color: var(--stage);
 }
 
 .scroll-y {
@@ -47,6 +102,6 @@ body {
   width: 8px;
 }
 .scroll-y::-webkit-scrollbar-thumb {
-  background: #c9ccd4;
+  background: var(--scrollbar);
   border-radius: 4px;
 }
