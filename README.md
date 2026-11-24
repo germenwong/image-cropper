@@ -42,7 +42,9 @@ npm run tauri build
 ```
 
 - macOS 产物：`src-tauri/target/release/bundle/macos/一键批量裁切.app` 与 `.dmg`
-- Windows 产物：`src-tauri/target/release/bundle/msi/*.msi`、`nsis/*.exe`
+- Windows 产物：`bundle/msi/一键批量裁切_<版本>_x64_zh-CN.msi`、`bundle/nsis/一键批量裁切_<版本>_x64-setup.exe`，以及免安装单文件 `target/release/image-cropper.exe`
+
+  产品名是中文，WiX 默认代码页 1252 会导致 MSI 打包失败（LGHT0311），已在 `tauri.conf.json` 的 `bundle.windows.wix.language` 指定 `zh-CN`，安装包文件名因此带 `_zh-CN`。
 
 Windows 需在 Windows 机器上执行打包（Tauri 不支持跨平台交叉编译安装包）。
 
@@ -85,3 +87,4 @@ src-tauri/src/
 - MVP 仅支持居中裁切，对齐方式后续版本扩展
 - WebP 目前使用无损编码
 - 未做代码签名与公证，首次打开 macOS 需右键 →「打开」
+- 未做代码签名，Windows 首次运行安装包或 exe 会触发 SmartScreen「未知发布者」，需点「更多信息 → 仍要运行」
