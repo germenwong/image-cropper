@@ -55,4 +55,9 @@ const themeOverrides = {
   flex: 1 1 auto;
   min-height: 0;
 }
+
+/* 弹窗遮罩毛玻璃 */
+.n-modal-mask {
+  backdrop-filter: blur(8px);
+}
 </style>

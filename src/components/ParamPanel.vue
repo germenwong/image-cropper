@@ -19,6 +19,7 @@ import {
   useMessage,
 } from "naive-ui";
 import { AddOutline, CloseOutline, FlashOutline } from "@vicons/ionicons5";
+import ModeHelpModal from "./ModeHelpModal.vue";
 import type { CropConfig, CropMode, FillMode, OutputFormat, Preset } from "../types";
 
 const props = defineProps<{
@@ -35,6 +36,7 @@ const emit = defineEmits<{
 const message = useMessage();
 const newName = ref("");
 const showPresetForm = ref(false);
+const showModeHelp = ref(false);
 
 const cfg = computed(() => props.config);
 
@@ -100,16 +102,11 @@ const qualityDisabled = computed(() => props.config.format === "png");
 
 <template>
   <div class="panel">
+    <mode-help-modal v-model:show="showModeHelp" />
     <div class="block">
       <div class="block-title">
         模式
-        <n-tooltip>
-          <template #trigger>
-            <span class="hint">?</span>
-          </template>
-          规格输出：目标尺寸决定取景比例，再缩放到该像素（主流做法）<br />
-          像素裁切：从原图按目标像素 1:1 截取，不缩放
-        </n-tooltip>
+        <span class="hint" title="点击查看两种模式示例" @click="showModeHelp = true">?</span>
       </div>
       <n-radio-group
         :value="cfg.mode"
@@ -332,7 +329,7 @@ const qualityDisabled = computed(() => props.config.format === "png");
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: help;
+  cursor: pointer;
 }
 .q {
   margin-left: auto;
