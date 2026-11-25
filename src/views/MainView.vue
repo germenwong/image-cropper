@@ -7,6 +7,7 @@ import {
   NDivider,
   NEmpty,
   NIcon,
+  NPopconfirm,
   NProgress,
   NScrollbar,
   NSwitch,
@@ -388,6 +389,21 @@ const fillLabel = computed(() => {
   return `背景色 ${f.hex.toUpperCase()}`;
 });
 
+/** 清空目录、预览、日志与进度；保留参数设置与尺寸预设，不动磁盘文件 */
+function clearAll() {
+  config.srcDir = "";
+  config.outDir = "";
+  srcCount.value = undefined;
+  samplePath.value = "";
+  originalPreview.value = null;
+  croppedPreview.value = "";
+  cropBox.value = null;
+  dirty.value = false;
+  logs.value = [];
+  onlyFailed.value = false;
+  Object.assign(progress, { taskId: 0, total: 0, done: 0, failed: 0, current: "" });
+}
+
 const ratioLabel = computed(() => {
   if (!config.targetW || !config.targetH) return "";
   const g = (a: number, b: number): number => (b ? g(b, a % b) : a);
@@ -427,6 +443,12 @@ const ratioLabel = computed(() => {
         <div class="tips">
           支持 png / jpg / jpeg / webp，自动递归子目录 · 纯本地处理，不上传任何图片
         </div>
+        <n-popconfirm @positive-click="clearAll">
+          <template #trigger>
+            <n-button size="tiny" quaternary :disabled="running">清空</n-button>
+          </template>
+          清空目录、预览、日志和导出进度？不会删除任何文件。
+        </n-popconfirm>
         <div class="theme-toggle">
           <span class="dim">深色模式</span>
           <n-switch v-model:value="isDark" size="small" />
