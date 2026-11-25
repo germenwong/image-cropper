@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:app": "node scripts/dev.mjs",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "pack": "node scripts/build.mjs",
+    "pack:debug": "node scripts/build.mjs --debug"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",

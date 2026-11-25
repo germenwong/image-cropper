@@ -36,22 +36,38 @@
 ## 开发
 
 ```bash
-npm install
-npm run tauri dev
+npm run dev:app
 ```
+
+一条命令搞定：检查 Node / Rust / Xcode CLT 环境 → 缺失依赖自动 `npm install` → 启动 Vite（1420）与 Tauri 桌面窗口，前端改动热更新。
+
+- Rust 装在 rustup 里但 `cargo` 没进 PATH 时，脚本会自动去 `~/.cargo/bin`、`~/.rustup/toolchains/*/bin` 查找
+- 只调前端样式可 `npm run dev` 在浏览器打开，但没有 Tauri 命令，图片相关功能不可用
+- 手动等价命令：`npm install && npm run tauri dev`
 
 ## 打包
 
 ```bash
-npm run tauri build
+npm run pack          # release 包
+npm run pack:debug    # debug 包，仅本地验证
 ```
 
-- macOS 产物：`src-tauri/target/release/bundle/macos/一键批量裁切.app` 与 `.dmg`
-- Windows 产物：`bundle/msi/一键批量裁切_<版本>_x64_zh-CN.msi`、`bundle/nsis/一键批量裁切_<版本>_x64-setup.exe`，以及免安装单文件 `target/release/image-cropper.exe`
+打包脚本会读取 `src-tauri/tauri.conf.json` 的版本号，构建后把产物按平台归集到 `release/<平台>/<版本>/`，并打印体积清单。加 `-- --open` 可直接打开输出目录。
 
-  产品名是中文，WiX 默认代码页 1252 会导致 MSI 打包失败（LGHT0311），已在 `tauri.conf.json` 的 `bundle.windows.wix.language` 指定 `zh-CN`，安装包文件名因此带 `_zh-CN`。
+| 平台 | 产物 |
+| --- | --- |
+| macOS | `一键批量裁切_<版本>.app`、`一键批量裁切_<版本>_<arch>.dmg` |
+| Windows | `..._x64_zh-CN.msi`、`..._x64-setup.exe`、`一键批量裁切_<版本>_portable.exe`（免安装） |
 
-Windows 需在 Windows 机器上执行打包（Tauri 不支持跨平台交叉编译安装包）。
+```bash
+npm run pack -- --open          # 打包并打开产物目录
+```
+
+Tauri 不支持交叉编译安装包，**Windows 包必须在 Windows 机器上执行 `npm run pack`**（脚本是 Node 写的，macOS / Windows 共用一套，本机装有 Node 即可）。
+
+手动等价命令：`npm run tauri build`，产物在 `src-tauri/target/release/bundle/`。
+
+产品名是中文，WiX 默认代码页 1252 会导致 MSI 打包失败（LGHT0311），已在 `tauri.conf.json` 的 `bundle.windows.wix.language` 指定 `zh-CN`，安装包文件名因此带 `_zh-CN`。
 
 ## 测试
 
@@ -65,6 +81,10 @@ cargo run --example run_batch_check             # 批量导出验证，结果输
 ## 目录结构
 
 ```
+scripts/
+  dev.mjs                # 一键启动调试
+  build.mjs              # 打包 + 产物归集
+  env.mjs                # 环境探测（Node / cargo / 版本号）
 src/                     # Vue 前端
   views/MainView.vue     # 主界面：目录区 / 参数区 / 双栏预览 / 导出面板
   components/
